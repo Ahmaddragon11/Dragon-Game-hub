@@ -16,7 +16,6 @@ export interface Game {
 export const games: Game[] = [
   { id:'tictactoe', name:'تيك تاك تو', nameEn:'Tic Tac Toe', icon:'⭕', category:'strategy', hasAI:true,  description:'اللعبة الكلاسيكية X وO ضد ذكاء اصطناعي متطور', tags:['كلاسيكي','استراتيجية','AI'], points:50, badge:'ai' },
   { id:'guessnumber', name:'تخمين الرقم', nameEn:'Guess the Number', icon:'🔢', category:'puzzle', hasAI:false, description:'اكتشف الرقم المخفي بأقل عدد من المحاولات', tags:['أرقام','منطق'], points:30 },
-  { id:'spy', name:'من الجاسوس؟', nameEn:'Who is the Spy?', icon:'🕵️', category:'puzzle', hasAI:true,  description:'هل أنت الجاسوس أم المواطن؟ اكتشف المكان أو أخفِ هويتك', tags:['اجتماعية','استنتاج'], points:40 },
   { id:'quiz', name:'لعبة الأسئلة', nameEn:'Quiz Game', icon:'📝', category:'trivia', hasAI:false, description:'اختبر معلوماتك العامة بأسئلة متنوعة وشيّقة', tags:['ثقافة','معرفة'], points:50 },
   { id:'math', name:'تحدي الرياضيات', nameEn:'Math Challenge', icon:'🧮', category:'math', hasAI:false, description:'حل المسائل الرياضية بأسرع ما يمكن', tags:['رياضيات','سرعة'], points:60 },
   { id:'memory', name:'لعبة الذاكرة', nameEn:'Memory Game', icon:'🧠', category:'memory', hasAI:false, description:'طابق أزواج البطاقات لاختبار ذاكرتك القوية', tags:['ذاكرة','بطاقات'], points:80 },

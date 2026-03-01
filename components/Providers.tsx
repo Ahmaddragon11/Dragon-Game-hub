@@ -22,6 +22,7 @@ interface GameStat {
 interface AppState {
   playerName: string;
   soundEnabled: boolean;
+  vibrationEnabled: boolean;
   stats: Stats;
   gameStats: Record<string, GameStat>;
   unlockedAchievements: string[];
@@ -30,15 +31,16 @@ interface AppState {
 interface AppContextType extends AppState {
   setPlayerName: (name: string) => void;
   toggleSound: () => void;
+  toggleVibration: () => void;
   updateGameStats: (gameId: string, points: number, won: boolean) => void;
   resetData: () => void;
-  importData: (data: any) => void;
   addToast: (message: string, type?: 'success' | 'error' | 'achievement' | 'info') => void;
 }
 
 const defaultState: AppState = {
   playerName: 'اللاعب',
   soundEnabled: false,
+  vibrationEnabled: true,
   stats: { points: 0, wins: 0, games: 0, level: 1 },
   gameStats: {},
   unlockedAchievements: [],
@@ -155,13 +157,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       return { ...prev, soundEnabled: newState };
     });
   };
+  const toggleVibration = () => {
+    setState(prev => {
+      const newState = !prev.vibrationEnabled;
+      if (newState && typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+      return { ...prev, vibrationEnabled: newState };
+    });
+  };
   const resetData = () => setState(defaultState);
-  const importData = (data: any) => setState(prev => ({ ...prev, ...data }));
 
   if (!isLoaded) return null;
 
   return (
-    <AppContext.Provider value={{ ...state, setPlayerName, toggleSound, updateGameStats, resetData, importData, addToast }}>
+    <AppContext.Provider value={{ ...state, setPlayerName, toggleSound, toggleVibration, updateGameStats, resetData, addToast }}>
       {children}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col-reverse gap-2 items-center pointer-events-none">
         {toasts.map(t => (

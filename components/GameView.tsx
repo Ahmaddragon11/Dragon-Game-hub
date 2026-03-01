@@ -5,7 +5,6 @@ import { games } from '@/lib/games-data';
 import { ArrowRight } from 'lucide-react';
 import { TicTacToe } from './games/TicTacToe';
 import { GuessNumber } from './games/GuessNumber';
-import { SpyGame } from './games/SpyGame';
 import { Quiz } from './games/Quiz';
 import { MathChallenge } from './games/MathChallenge';
 import { MemoryGame } from './games/MemoryGame';
@@ -32,7 +31,6 @@ export function GameView({ gameId, onClose }: GameViewProps) {
     switch (gameId) {
       case 'tictactoe': return <TicTacToe key={key} difficulty={difficulty} />;
       case 'guessnumber': return <GuessNumber key={key} difficulty={difficulty} />;
-      case 'spy': return <SpyGame key={key} difficulty={difficulty} />;
       case 'quiz': return <Quiz key={key} difficulty={difficulty} />;
       case 'math': return <MathChallenge key={key} difficulty={difficulty} />;
       case 'memory': return <MemoryGame key={key} difficulty={difficulty} />;

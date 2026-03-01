@@ -2,63 +2,16 @@
 
 import { useRef } from 'react';
 import { useAppStore } from './Providers';
-import { Settings, User, BarChart3, Volume2, Database, Trash2, Download, Upload } from 'lucide-react';
+import { Settings, User, BarChart3, Volume2, Trash2, Code, Send, Vibrate } from 'lucide-react';
 
 export function SettingsView() {
-  const { playerName, setPlayerName, stats, gameStats, unlockedAchievements, soundEnabled, toggleSound, resetData, importData, addToast } = useAppStore();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { playerName, setPlayerName, stats, gameStats, unlockedAchievements, soundEnabled, toggleSound, vibrationEnabled, toggleVibration, resetData, addToast } = useAppStore();
 
   const handleSaveName = () => {
     const nameInput = document.getElementById('playerNameInput') as HTMLInputElement;
     const name = nameInput.value.trim() || 'اللاعب';
     setPlayerName(name);
     addToast('✅ تم حفظ الاسم!', 'success');
-  };
-
-  const handleExport = () => {
-    const data = {
-      version: 2,
-      exportedAt: new Date().toISOString(),
-      stats,
-      gameStats,
-      achievements: unlockedAchievements,
-      playerName,
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'gameshub-save.json';
-    a.click();
-    URL.revokeObjectURL(url);
-    addToast('📤 تم تصدير البيانات!', 'success');
-  };
-
-  const handleImportClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      try {
-        const data = JSON.parse(ev.target?.result as string);
-        const imported = {
-          stats: data.stats || stats,
-          gameStats: data.gameStats || gameStats,
-          unlockedAchievements: data.achievements || unlockedAchievements,
-          playerName: data.playerName || playerName,
-        };
-        importData(imported);
-        addToast('📥 تم الاستيراد بنجاح!', 'success');
-      } catch {
-        addToast('❌ فشل الاستيراد — تأكد من صحة الملف', 'error');
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = '';
   };
 
   const handleReset = () => {
@@ -133,55 +86,64 @@ export function SettingsView() {
         </div>
       </section>
 
-      {/* Audio */}
+      {/* Audio & Vibration */}
       <section className="bg-slate-900/80 border border-slate-700/50 rounded-3xl p-6 sm:p-8 shadow-xl">
         <div className="flex items-center gap-3 mb-6">
           <Volume2 className="w-5 h-5 text-green-400" />
-          <h3 className="text-xl font-bold text-slate-200">الصوت</h3>
+          <h3 className="text-xl font-bold text-slate-200">التجربة الحسية</h3>
         </div>
-        <label className="flex items-center gap-4 cursor-pointer group">
-          <div className="relative">
-            <input
-              type="checkbox"
-              checked={soundEnabled}
-              onChange={toggleSound}
-              className="sr-only"
-            />
-            <div className={`block w-14 h-8 rounded-full transition-colors ${soundEnabled ? 'bg-violet-600' : 'bg-slate-700'}`}></div>
-            <div className={`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${soundEnabled ? 'translate-x-6' : 'translate-x-0'}`}></div>
-          </div>
-          <span className="text-slate-300 font-medium group-hover:text-white transition-colors">تفعيل المؤثرات الصوتية</span>
-        </label>
+        <div className="space-y-4">
+          <label className="flex items-center gap-4 cursor-pointer group">
+            <div className="relative">
+              <input
+                type="checkbox"
+                checked={soundEnabled}
+                onChange={toggleSound}
+                className="sr-only"
+              />
+              <div className={`block w-14 h-8 rounded-full transition-colors ${soundEnabled ? 'bg-violet-600' : 'bg-slate-700'}`}></div>
+              <div className={`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${soundEnabled ? 'translate-x-6' : 'translate-x-0'}`}></div>
+            </div>
+            <span className="text-slate-300 font-medium group-hover:text-white transition-colors">تفعيل المؤثرات الصوتية</span>
+          </label>
+
+          <label className="flex items-center gap-4 cursor-pointer group">
+            <div className="relative">
+              <input
+                type="checkbox"
+                checked={vibrationEnabled}
+                onChange={toggleVibration}
+                className="sr-only"
+              />
+              <div className={`block w-14 h-8 rounded-full transition-colors ${vibrationEnabled ? 'bg-violet-600' : 'bg-slate-700'}`}></div>
+              <div className={`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${vibrationEnabled ? 'translate-x-6' : 'translate-x-0'}`}></div>
+            </div>
+            <span className="text-slate-300 font-medium group-hover:text-white transition-colors">تفعيل الاهتزاز (للأجهزة المدعومة)</span>
+          </label>
+        </div>
       </section>
 
-      {/* Data Management */}
+      {/* Developer Info */}
       <section className="bg-slate-900/80 border border-slate-700/50 rounded-3xl p-6 sm:p-8 shadow-xl">
         <div className="flex items-center gap-3 mb-6">
-          <Database className="w-5 h-5 text-amber-400" />
-          <h3 className="text-xl font-bold text-slate-200">بيانات اللعبة</h3>
+          <Code className="w-5 h-5 text-emerald-400" />
+          <h3 className="text-xl font-bold text-slate-200">عن المطور</h3>
         </div>
-        <div className="flex flex-wrap gap-4">
-          <button
-            onClick={handleExport}
-            className="flex items-center gap-2 px-6 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold rounded-xl transition-colors"
+        <div className="flex flex-col items-center text-center bg-slate-800/30 rounded-2xl p-6 border border-slate-700/30">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-3xl shadow-lg shadow-emerald-500/20 mb-4">
+            🐉
+          </div>
+          <h4 className="text-2xl font-bold text-slate-100 mb-1">AHMAD DRAGON</h4>
+          <p className="text-slate-400 text-sm mb-6">مطور ومصمم واجهات الويب</p>
+          <a
+            href="https://t.me/ahmaddragon"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-6 py-3 bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold rounded-xl transition-all shadow-lg shadow-[#0088cc]/20 hover:scale-105"
           >
-            <Download className="w-4 h-4" />
-            تصدير
-          </button>
-          <button
-            onClick={handleImportClick}
-            className="flex items-center gap-2 px-6 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold rounded-xl transition-colors"
-          >
-            <Upload className="w-4 h-4" />
-            استيراد
-          </button>
-          <input
-            type="file"
-            ref={fileInputRef}
-            className="hidden"
-            accept=".json"
-            onChange={handleImport}
-          />
+            <Send className="w-5 h-5" />
+            تواصل معي على تيليجرام
+          </a>
         </div>
       </section>
 

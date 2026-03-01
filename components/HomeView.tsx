@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useAppStore } from './Providers';
 import { games, Category } from '@/lib/games-data';
-import { Search, Trophy, Gamepad2, Star, Flame } from 'lucide-react';
+import { Search, Trophy, Gamepad2, Star, Flame, Play, Sparkles } from 'lucide-react';
 
 interface HomeViewProps {
   onOpenGame: (gameId: string) => void;
@@ -40,55 +40,84 @@ export function HomeView({ onOpenGame }: HomeViewProps) {
 
   const bestGameEntry = Object.entries(gameStats).sort((a, b) => b[1].bestScore - a[1].bestScore)[0];
   const bestGame = bestGameEntry ? games.find(g => g.id === bestGameEntry[0]) : null;
+  const featuredGame = games.find(g => g.id === 'snake');
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-12 animate-in fade-in duration-500">
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-500/20 to-pink-500/10 border border-violet-500/30 p-6 sm:p-8 lg:p-10 shadow-2xl shadow-violet-500/10">
-        <div className="absolute -top-32 -right-32 w-96 h-96 bg-violet-500/20 rounded-full blur-3xl pointer-events-none" />
-        
-        <div className="relative z-10">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-2">
-            مرحباً، <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-pink-400">{playerName}</span>! 👋
-          </h2>
-          <p className="text-slate-300 text-lg mb-6">
-            لديك <strong className="text-amber-400">{stats.points}</strong> نقطة تجميعية
+      <section className="relative overflow-hidden rounded-[3rem] bg-gradient-to-br from-violet-600 via-fuchsia-600 to-orange-500 p-8 sm:p-12 text-center shadow-2xl shadow-violet-500/20">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+        <div className="relative z-10 max-w-2xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium mb-6">
+            <Sparkles className="w-4 h-4 text-amber-300" />
+            مرحباً بك في عالم الألعاب
+          </div>
+          <h1 className="text-4xl sm:text-6xl font-black text-white mb-6 leading-tight">
+            مرحباً <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-yellow-400">{playerName}</span>!
+            <br />
+            جاهز للتحدي؟
+          </h1>
+          <p className="text-lg text-white/80 mb-8 font-medium">
+            اختر من بين مجموعة متنوعة من الألعاب الكلاسيكية والحديثة، اجمع النقاط، وافتح الإنجازات!
           </p>
 
-          <div className="flex flex-wrap gap-3 mb-8">
-            <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-              <Trophy className="w-4 h-4 text-green-400" />
-              <span className="text-sm font-medium">{stats.wins} فوز</span>
+          <div className="flex flex-wrap justify-center gap-4 mb-8">
+            <div className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-md">
+              <Trophy className="w-5 h-5 text-amber-300" />
+              <span className="text-white font-bold">{stats.points} نقطة</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-              <Gamepad2 className="w-4 h-4 text-blue-400" />
-              <span className="text-sm font-medium">{stats.games} لعبة</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-              <Star className="w-4 h-4 text-amber-400" />
-              <span className="text-sm font-medium">المستوى {stats.level}</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-              <Flame className="w-4 h-4 text-red-400" />
-              <span className="text-sm font-medium">أفضل: {bestGame ? `${bestGame.icon} ${bestGame.name}` : '—'}</span>
+            <div className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-md">
+              <Star className="w-5 h-5 text-amber-300" />
+              <span className="text-white font-bold">المستوى {stats.level}</span>
             </div>
           </div>
 
-          <div className="max-w-md">
-            <div className="flex justify-between text-xs text-slate-400 mb-2 font-medium">
+          <div className="max-w-md mx-auto bg-black/20 p-4 rounded-2xl backdrop-blur-sm border border-white/10">
+            <div className="flex justify-between text-sm text-white/90 mb-2 font-medium">
               <span>تقدم المستوى</span>
-              <span>XP: {xpInLevel}/{xpNeeded} للمستوى {stats.level + 1}</span>
+              <span>{xpInLevel}/{xpNeeded} XP</span>
             </div>
-            <div className="h-2.5 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-3 bg-black/40 rounded-full overflow-hidden">
               <div 
-                className="h-full bg-gradient-to-r from-violet-500 to-pink-500 rounded-full transition-all duration-1000 ease-out"
+                className="h-full bg-gradient-to-r from-amber-400 to-orange-400 rounded-full transition-all duration-1000 ease-out relative"
                 style={{ width: `${progressPercent}%` }}
-              />
+              >
+                <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+              </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Featured Game */}
+      {featuredGame && (
+        <section className="animate-in slide-in-from-bottom-10 fade-in duration-700 delay-100">
+          <div className="flex items-center gap-3 mb-6 px-2">
+            <Gamepad2 className="w-6 h-6 text-violet-400" />
+            <h2 className="text-2xl font-bold text-slate-100">اللعبة المميزة</h2>
+          </div>
+          <div 
+            onClick={() => onOpenGame(featuredGame.id)}
+            className="group relative overflow-hidden rounded-3xl bg-slate-800/50 border border-slate-700/50 p-6 sm:p-8 cursor-pointer hover:bg-slate-800 transition-all hover:scale-[1.02] hover:shadow-2xl hover:shadow-violet-500/20 flex flex-col sm:flex-row items-center gap-8"
+          >
+            <div className="w-32 h-32 shrink-0 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-6xl shadow-lg shadow-violet-500/30 group-hover:scale-110 transition-transform duration-500">
+              {featuredGame.icon}
+            </div>
+            <div className="flex-1 text-center sm:text-right">
+              <div className="inline-block px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold mb-3 border border-amber-500/20">
+                الأكثر لعباً 🔥
+              </div>
+              <h3 className="text-3xl font-bold text-slate-100 mb-2">{featuredGame.name}</h3>
+              <p className="text-slate-400 mb-6 max-w-md mx-auto sm:mx-0">{featuredGame.description}</p>
+              <button className="inline-flex items-center gap-2 px-8 py-3 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl transition-colors shadow-lg shadow-violet-600/20">
+                <Play className="w-5 h-5" />
+                العب الآن
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Filters & Search */}
       <section className="flex flex-col md:flex-row gap-4 items-center justify-between">

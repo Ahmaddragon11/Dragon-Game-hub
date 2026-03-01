@@ -21,7 +21,7 @@ export function WordScramble({ difficulty }: { difficulty: Difficulty }) {
   const [currentQ, setCurrentQ] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
   const [gameOver, setGameOver] = useState(false);
-  const [usedWords, setUsedWords] = useState<Set<string>>(new Set());
+  const usedWordsRef = useRef<Set<string>>(new Set());
   const inputRef = useRef<HTMLInputElement>(null);
 
   const totalQuestions = difficulty === 'easy' ? 5 : difficulty === 'medium' ? 7 : difficulty === 'hard' ? 9 : 12;
@@ -39,25 +39,25 @@ export function WordScramble({ difficulty }: { difficulty: Difficulty }) {
   }, []);
 
   const generateWord = useCallback(() => {
-    const available = wordList.filter(w => !usedWords.has(w));
+    const available = wordList.filter(w => !usedWordsRef.current.has(w));
     const nextWord = available.length > 0 ? available[Math.floor(Math.random() * available.length)] : wordList[Math.floor(Math.random() * wordList.length)];
     setWord(nextWord);
     setScrambled(scramble(nextWord));
-    setUsedWords(prev => new Set([...prev, nextWord]));
+    usedWordsRef.current.add(nextWord);
     setTimeLeft(questionTime);
     if (inputRef.current) {
       inputRef.current.value = '';
       inputRef.current.focus();
     }
-  }, [usedWords, scramble, questionTime]);
+  }, [scramble, questionTime]);
 
   useEffect(() => {
     Promise.resolve().then(() => {
+      usedWordsRef.current.clear();
       generateWord();
       setScore(0);
       setCurrentQ(0);
       setGameOver(false);
-      setUsedWords(new Set());
     });
   }, [generateWord]);
 
@@ -119,7 +119,7 @@ export function WordScramble({ difficulty }: { difficulty: Difficulty }) {
         <p className="text-slate-400 mb-4">خمّنت <strong className="text-violet-400">{score}</strong> من <strong className="text-violet-400">{totalQuestions}</strong> بشكل صحيح</p>
         <p className="text-2xl text-green-400 mb-8 font-medium">النقاط: {score * 12}</p>
         <button
-          onClick={() => { setGameOver(false); setScore(0); setCurrentQ(0); setUsedWords(new Set()); generateWord(); }}
+          onClick={() => { setGameOver(false); setScore(0); setCurrentQ(0); usedWordsRef.current.clear(); generateWord(); }}
           className="px-8 py-3 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl shadow-lg shadow-violet-500/20 transition-all hover:scale-105"
         >
           🔄 جولة جديدة
@@ -131,7 +131,7 @@ export function WordScramble({ difficulty }: { difficulty: Difficulty }) {
   const progressPercent = (currentQ / totalQuestions) * 100;
 
   return (
-    <div className="flex flex-col items-center w-full max-md animate-in fade-in duration-300">
+    <div className="flex flex-col items-center w-full max-w-md animate-in fade-in duration-300">
       <div className="w-full flex justify-between items-center mb-4 text-sm font-medium">
         <span className="text-slate-400">الكلمة {currentQ + 1}/{totalQuestions}</span>
         <span className={`px-3 py-1 rounded-lg border ${

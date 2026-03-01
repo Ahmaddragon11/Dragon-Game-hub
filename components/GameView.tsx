@@ -15,6 +15,7 @@ import { ReactionTime } from './games/ReactionTime';
 import { Game2048 } from './games/Game2048';
 import { ConnectFour } from './games/ConnectFour';
 import { Hangman } from './games/Hangman';
+import { ClickerGame } from './games/ClickerGame';
 
 interface GameViewProps {
   gameId: string;
@@ -44,6 +45,7 @@ export function GameView({ gameId, onClose }: GameViewProps) {
       case '2048': return <Game2048 key={key} difficulty={difficulty} />;
       case 'connectfour': return <ConnectFour key={key} difficulty={difficulty} />;
       case 'hangman': return <Hangman key={key} difficulty={difficulty} />;
+      case 'clicker': return <ClickerGame key={key} difficulty={difficulty} />;
       default: return <div>Game not implemented yet</div>;
     }
   };

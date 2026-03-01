@@ -34,6 +34,7 @@ interface AppContextType extends AppState {
   toggleVibration: () => void;
   updateGameStats: (gameId: string, points: number, won: boolean) => void;
   resetData: () => void;
+  importData: (data: Partial<AppState>) => void;
   addToast: (message: string, type?: 'success' | 'error' | 'achievement' | 'info') => void;
 }
 
@@ -167,11 +168,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     });
   };
   const resetData = () => setState(defaultState);
+  const importData = (data: Partial<AppState>) => setState(prev => ({ ...prev, ...data }));
 
   if (!isLoaded) return null;
 
   return (
-    <AppContext.Provider value={{ ...state, setPlayerName, toggleSound, toggleVibration, updateGameStats, resetData, addToast }}>
+    <AppContext.Provider value={{ ...state, setPlayerName, toggleSound, toggleVibration, updateGameStats, resetData, importData, addToast }}>
       {children}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col-reverse gap-2 items-center pointer-events-none">
         {toasts.map(t => (

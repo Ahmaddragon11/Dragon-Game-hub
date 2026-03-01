@@ -4,6 +4,12 @@ import { useState } from 'react';
 import { useAppStore } from './Providers';
 import { games, Category } from '@/lib/games-data';
 import { Search, Trophy, Gamepad2, Star, Flame, Play, Sparkles } from 'lucide-react';
+import { AuthButton } from './AuthButton';
+
+import { CommunityView } from './CommunityView';
+import { AdminDashboard } from './AdminDashboard';
+import { auth } from '@/lib/firebase';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 interface HomeViewProps {
   onOpenGame: (gameId: string) => void;
@@ -12,10 +18,14 @@ interface HomeViewProps {
 export function HomeView({ onOpenGame }: HomeViewProps) {
   const { playerName, stats, gameStats } = useAppStore();
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState<Category>('all');
+  const [activeCategory, setActiveCategory] = useState<Category | 'community' | 'admin'>('all');
+  const [user] = useAuthState(auth);
+  const isAdmin = user?.email === 'ahmad22dragon113@gmail.com';
 
-  const categories: { id: Category; label: string; icon: string }[] = [
+  const categories: { id: Category | 'community' | 'admin'; label: string; icon: string }[] = [
     { id: 'all', label: 'الكل', icon: '🎮' },
+    { id: 'community', label: 'المجتمع', icon: '🌍' },
+    ...(isAdmin ? [{ id: 'admin' as const, label: 'الإدارة', icon: '🛡️' }] : []),
     { id: 'puzzle', label: 'ألغاز', icon: '🧩' },
     { id: 'strategy', label: 'استراتيجية', icon: '♟️' },
     { id: 'trivia', label: 'أسئلة', icon: '📝' },
@@ -52,6 +62,9 @@ export function HomeView({ onOpenGame }: HomeViewProps) {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium mb-6">
             <Sparkles className="w-4 h-4 text-amber-300" />
             مرحباً بك في عالم الألعاب
+          </div>
+          <div className="absolute top-6 left-6 z-20">
+            <AuthButton />
           </div>
           <h1 className="text-4xl sm:text-6xl font-black text-white mb-6 leading-tight">
             مرحباً <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-yellow-400">{playerName}</span>!
@@ -91,7 +104,7 @@ export function HomeView({ onOpenGame }: HomeViewProps) {
       </section>
 
       {/* Featured Game */}
-      {featuredGame && (
+      {activeCategory === 'all' && featuredGame && (
         <section className="animate-in slide-in-from-bottom-10 fade-in duration-700 delay-100">
           <div className="flex items-center gap-3 mb-6 px-2">
             <Gamepad2 className="w-6 h-6 text-violet-400" />
@@ -150,9 +163,14 @@ export function HomeView({ onOpenGame }: HomeViewProps) {
         </div>
       </section>
 
-      {/* Games Grid */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredGames.length === 0 ? (
+      {/* Content Area */}
+      {activeCategory === 'community' ? (
+        <CommunityView />
+      ) : activeCategory === 'admin' && isAdmin ? (
+        <AdminDashboard />
+      ) : (
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredGames.length === 0 ? (
           <div className="col-span-full py-20 text-center">
             <div className="text-6xl mb-4">🔍</div>
             <h3 className="text-2xl font-bold text-slate-200 mb-2">لم يتم العثور على ألعاب</h3>
@@ -164,55 +182,79 @@ export function HomeView({ onOpenGame }: HomeViewProps) {
             const bestScore = gs ? `🏅 أحسن نتيجة: ${gs.bestScore}` : '';
             const playCount = gs ? `${gs.plays} مرة` : 'جديد';
 
-            return (
+              return (
               <div 
                 key={game.id}
                 onClick={() => onOpenGame(game.id)}
-                className="group relative bg-slate-800/80 rounded-3xl overflow-hidden border border-violet-500/20 hover:border-violet-500/60 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-violet-500/20 cursor-pointer flex flex-col"
+                className="group relative bg-slate-800/40 backdrop-blur-sm rounded-[2rem] overflow-hidden border border-white/5 hover:border-violet-500/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-violet-500/20 cursor-pointer flex flex-col h-full"
               >
-                <div className="p-6 flex-1">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center text-3xl shadow-lg shadow-violet-500/30 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                      {game.icon}
+                {/* Card Header / Icon */}
+                <div className="relative h-32 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900 group-hover:scale-110 transition-transform duration-700"></div>
+                  <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-30"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div>
+                  
+                  <div className="absolute top-4 right-4 z-10 flex gap-2">
+                    {game.hasAI && <span className="px-2 py-1 rounded-lg text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/20 backdrop-blur-md">🤖 AI</span>}
+                    {game.badge === 'new' && <span className="px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 backdrop-blur-md">✨ جديد</span>}
+                    {game.badge === 'hot' && <span className="px-2 py-1 rounded-lg text-[10px] font-bold bg-red-500/20 text-red-300 border border-red-500/20 backdrop-blur-md">🔥 شائع</span>}
+                  </div>
+
+                  <div className="absolute -bottom-6 left-6 w-20 h-20 rounded-2xl bg-gradient-to-br from-slate-700 to-slate-600 border-4 border-slate-800 flex items-center justify-center text-4xl shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 z-10">
+                    {game.icon}
+                  </div>
+                </div>
+
+                {/* Card Body */}
+                <div className="p-6 pt-8 flex-1 flex flex-col">
+                  <h3 className="text-xl font-bold text-slate-100 mb-1 group-hover:text-violet-400 transition-colors">{game.name}</h3>
+                  <p className="text-xs text-slate-500 mb-4 font-mono uppercase tracking-wider">{game.nameEn}</p>
+                  
+                  <p className="text-sm text-slate-400 leading-relaxed mb-6 line-clamp-2 flex-1">
+                    {game.description}
+                  </p>
+
+                  {/* Stats Row */}
+                  <div className="flex items-center justify-between text-xs font-medium text-slate-500 bg-slate-900/50 rounded-xl p-3 mb-4 border border-white/5">
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-violet-400">+{game.points}</span>
+                      <span>نقطة</span>
                     </div>
-                    <div className="flex flex-wrap gap-1.5 justify-end">
-                      {game.hasAI && <span className="px-2 py-1 rounded-lg text-[10px] font-bold bg-blue-500/20 text-blue-300">🤖 AI</span>}
-                      {game.badge === 'new' && <span className="px-2 py-1 rounded-lg text-[10px] font-bold bg-green-500/20 text-green-300">✨ جديد</span>}
-                      {game.badge === 'hot' && <span className="px-2 py-1 rounded-lg text-[10px] font-bold bg-red-500/20 text-red-300">🔥 شائع</span>}
+                    <div className="w-px h-8 bg-white/5"></div>
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-slate-300">{gs ? gs.plays : 0}</span>
+                      <span>لعب</span>
+                    </div>
+                    <div className="w-px h-8 bg-white/5"></div>
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-amber-400">{gs ? gs.bestScore : '-'}</span>
+                      <span>أفضل</span>
                     </div>
                   </div>
 
-                  <h3 className="text-xl font-bold text-slate-100 mb-1">{game.name}</h3>
-                  <p className="text-xs text-slate-400 mb-3">{game.nameEn}</p>
-                  <p className="text-sm text-slate-300 leading-relaxed mb-4 line-clamp-2">{game.description}</p>
-
-                  <div className="flex items-center gap-4 text-xs text-slate-400 mb-4">
-                    <span className="flex items-center gap-1">⏱️ ~3-5 د</span>
-                    <span className="flex items-center gap-1 text-violet-400">+{game.points} نقطة</span>
-                    <span className="flex items-center gap-1">{playCount}</span>
-                  </div>
-
-                  {bestScore && <p className="text-xs font-medium text-amber-400 mb-4">{bestScore}</p>}
-
-                  <div className="flex flex-wrap gap-1.5 mt-auto">
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-1.5">
                     {game.tags.map(tag => (
-                      <span key={tag} className="px-2 py-1 rounded-md bg-white/5 text-[10px] text-slate-400">
+                      <span key={tag} className="px-2 py-1 rounded-md bg-white/5 text-[10px] text-slate-400 border border-white/5">
                         #{tag}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                <div className="absolute inset-0 bg-gradient-to-t from-violet-900/90 via-violet-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-8">
-                  <button className="px-8 py-3 bg-white text-violet-900 rounded-xl font-bold text-sm shadow-xl shadow-black/50 hover:scale-105 transition-transform">
-                    العب الآن 🎮
+                {/* Hover Action */}
+                <div className="absolute inset-0 bg-violet-600/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
+                  <button className="px-8 py-3 bg-white text-violet-900 rounded-2xl font-black text-lg shadow-2xl hover:scale-110 transition-transform flex items-center gap-2">
+                    <Play className="w-5 h-5 fill-current" />
+                    العب الآن
                   </button>
                 </div>
               </div>
             );
           })
-        )}
-      </section>
+          )}
+        </section>
+      )}
     </div>
   );
 }

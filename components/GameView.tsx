@@ -12,6 +12,9 @@ import { Snake } from './games/Snake';
 import { RockPaperScissors } from './games/RockPaperScissors';
 import { WordScramble } from './games/WordScramble';
 import { ReactionTime } from './games/ReactionTime';
+import { Game2048 } from './games/Game2048';
+import { ConnectFour } from './games/ConnectFour';
+import { Hangman } from './games/Hangman';
 
 interface GameViewProps {
   gameId: string;
@@ -38,6 +41,9 @@ export function GameView({ gameId, onClose }: GameViewProps) {
       case 'rps': return <RockPaperScissors key={key} difficulty={difficulty} />;
       case 'wordscramble': return <WordScramble key={key} difficulty={difficulty} />;
       case 'reaction': return <ReactionTime key={key} difficulty={difficulty} />;
+      case '2048': return <Game2048 key={key} difficulty={difficulty} />;
+      case 'connectfour': return <ConnectFour key={key} difficulty={difficulty} />;
+      case 'hangman': return <Hangman key={key} difficulty={difficulty} />;
       default: return <div>Game not implemented yet</div>;
     }
   };

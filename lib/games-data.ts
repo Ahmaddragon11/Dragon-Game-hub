@@ -23,6 +23,9 @@ export const games: Game[] = [
   { id:'rps', name:'حجر ورقة مقص', nameEn:'Rock Paper Scissors', icon:'✂️', category:'strategy', hasAI:true,  description:'تحدَّ الذكاء الاصطناعي في أشهر لعبة بالعالم', tags:['كلاسيكي','سريع'], points:30 },
   { id:'wordscramble', name:'ترتيب الحروف', nameEn:'Word Scramble', icon:'🔤', category:'word', hasAI:false, description:'رتّب الحروف المبعثرة لتكوين الكلمة الصحيحة', tags:['كلمات','لغة'], points:50 },
   { id:'reaction', name:'سرعة الاستجابة', nameEn:'Reaction Time', icon:'⚡', category:'action', hasAI:false, description:'اضغط عند رؤية اللون الأخضر — كن الأسرع!', tags:['سرعة','ردود فعل'], points:40, badge:'new' },
+  { id:'2048', name:'2048', nameEn:'2048', icon:'🧩', category:'puzzle', hasAI:false, description:'اجمع الأرقام المتشابهة للوصول إلى الرقم 2048', tags:['أرقام','ذكاء'], points:100, badge:'hot' },
+  { id:'connectfour', name:'أربعة في صف', nameEn:'Connect Four', icon:'🔴', category:'strategy', hasAI:true, description:'قم بتوصيل 4 أقراص من لونك في صف واحد قبل خصمك', tags:['كلاسيكي','استراتيجية'], points:60, badge:'new' },
+  { id:'hangman', name:'الجلاد', nameEn:'Hangman', icon:'🪢', category:'word', hasAI:false, description:'خمن الكلمة المخفية قبل اكتمال المشنقة', tags:['كلمات','كلاسيكي'], points:50, badge:'new' },
 ];
 
 export const achievements = [

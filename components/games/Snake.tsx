@@ -48,21 +48,28 @@ export function Snake({ difficulty }: { difficulty: Difficulty }) {
       const dir = map[e.key.toLowerCase()];
       if (dir) {
         const opposite: Record<string, string> = { up: 'down', down: 'up', left: 'right', right: 'left' };
-        if (dir !== opposite[direction]) setNextDirection(dir);
+        const lastDir = directionQueue.current.length > 0 
+          ? directionQueue.current[directionQueue.current.length - 1] 
+          : directionRef.current;
+        
+        if (dir !== opposite[lastDir] && dir !== lastDir) {
+          directionQueue.current.push(dir);
+          setNextDirection(dir);
+        }
         e.preventDefault();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [direction]);
+  }, []);
 
   const snakeRef = useRef(snake);
   const directionRef = useRef(nextDirection);
+  const directionQueue = useRef<string[]>([]);
   const foodRef = useRef(food);
   const scoreRef = useRef(score);
 
   useEffect(() => { snakeRef.current = snake; }, [snake]);
-  useEffect(() => { directionRef.current = nextDirection; }, [nextDirection]);
   useEffect(() => { foodRef.current = food; }, [food]);
   useEffect(() => { scoreRef.current = score; }, [score]);
 
@@ -71,7 +78,8 @@ export function Snake({ difficulty }: { difficulty: Difficulty }) {
 
     const moveSnake = () => {
       const currentSnake = snakeRef.current;
-      const currentDir = directionRef.current;
+      const currentDir = directionQueue.current.length > 0 ? directionQueue.current.shift()! : directionRef.current;
+      directionRef.current = currentDir;
       const currentFood = foodRef.current;
       const currentScore = scoreRef.current;
 
@@ -150,7 +158,13 @@ export function Snake({ difficulty }: { difficulty: Difficulty }) {
 
   const handleSetDir = (dir: string) => {
     const opposite: Record<string, string> = { up: 'down', down: 'up', left: 'right', right: 'left' };
-    if (dir !== opposite[direction]) setNextDirection(dir);
+    const lastDir = directionQueue.current.length > 0 
+      ? directionQueue.current[directionQueue.current.length - 1] 
+      : directionRef.current;
+    if (dir !== opposite[lastDir] && dir !== lastDir) {
+      directionQueue.current.push(dir);
+      setNextDirection(dir);
+    }
   };
 
   if (gameOver) {

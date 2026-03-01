@@ -25,8 +25,8 @@ export function MemoryGame({ difficulty }: { difficulty: Difficulty }) {
   const pairsCount = difficulty === 'easy' ? 4 : difficulty === 'medium' ? 6 : difficulty === 'hard' ? 8 : 10;
 
   const initGame = useCallback(() => {
-    const emojis = ['🎮','🎲','🎯','🏆','⭐','🎪','🎨','🎭','🎵','🎸'];
-    const selectedEmojis = emojis.slice(0, pairsCount);
+    const emojis = ['🎮','🎲','🎯','🏆','⭐','🎪','🎨','🎭','🎵','🎸','⚽','🏀','🚗','🚀','🛸','🍕','🍔','🍎','🐶','🐱','🦁','🐸','🐼','🦊','🦋','🔥','💧','⚡','❄️','🌈'];
+    const selectedEmojis = [...emojis].sort(() => Math.random() - 0.5).slice(0, pairsCount);
     const gameCards = [...selectedEmojis, ...selectedEmojis]
       .sort(() => Math.random() - 0.5)
       .map((emoji, i) => ({ id: i, emoji, flipped: false, matched: false }));

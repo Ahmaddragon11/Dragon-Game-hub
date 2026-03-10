@@ -146,7 +146,7 @@ export function Game2048({ difficulty }: { difficulty: Difficulty }) {
         playSound('lose', soundEnabled);
       }
     }
-  }, [board, gameOver, won, hasContinued, targetScore, score, soundEnabled, updateGameStats]);
+  }, [board, gameOver, won, hasContinued, targetScore, score, soundEnabled, updateGameStats, addRandomTile]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

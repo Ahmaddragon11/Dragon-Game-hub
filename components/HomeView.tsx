@@ -4,12 +4,6 @@ import { useState } from 'react';
 import { useAppStore } from './Providers';
 import { games, Category } from '@/lib/games-data';
 import { Search, Trophy, Gamepad2, Star, Flame, Play, Sparkles } from 'lucide-react';
-import { AuthButton } from './AuthButton';
-
-import { CommunityView } from './CommunityView';
-import { AdminDashboard } from './AdminDashboard';
-import { auth } from '@/lib/firebase';
-import { useAuthState } from 'react-firebase-hooks/auth';
 
 interface HomeViewProps {
   onOpenGame: (gameId: string) => void;
@@ -18,14 +12,10 @@ interface HomeViewProps {
 export function HomeView({ onOpenGame }: HomeViewProps) {
   const { playerName, stats, gameStats } = useAppStore();
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState<Category | 'community' | 'admin'>('all');
-  const [user] = useAuthState(auth);
-  const isAdmin = user?.email === 'ahmad22dragon113@gmail.com';
+  const [activeCategory, setActiveCategory] = useState<Category>('all');
 
-  const categories: { id: Category | 'community' | 'admin'; label: string; icon: string }[] = [
+  const categories: { id: Category; label: string; icon: string }[] = [
     { id: 'all', label: 'الكل', icon: '🎮' },
-    { id: 'community', label: 'المجتمع', icon: '🌍' },
-    ...(isAdmin ? [{ id: 'admin' as const, label: 'الإدارة', icon: '🛡️' }] : []),
     { id: 'puzzle', label: 'ألغاز', icon: '🧩' },
     { id: 'strategy', label: 'استراتيجية', icon: '♟️' },
     { id: 'trivia', label: 'أسئلة', icon: '📝' },
@@ -62,9 +52,6 @@ export function HomeView({ onOpenGame }: HomeViewProps) {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium mb-6">
             <Sparkles className="w-4 h-4 text-amber-300" />
             مرحباً بك في عالم الألعاب
-          </div>
-          <div className="absolute top-6 left-6 z-20">
-            <AuthButton />
           </div>
           <h1 className="text-4xl sm:text-6xl font-black text-white mb-6 leading-tight">
             مرحباً <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-yellow-400">{playerName}</span>!
@@ -104,7 +91,7 @@ export function HomeView({ onOpenGame }: HomeViewProps) {
       </section>
 
       {/* Featured Game */}
-      {activeCategory === 'all' && featuredGame && (
+      {featuredGame && (
         <section className="animate-in slide-in-from-bottom-10 fade-in duration-700 delay-100">
           <div className="flex items-center gap-3 mb-6 px-2">
             <Gamepad2 className="w-6 h-6 text-violet-400" />
@@ -163,14 +150,9 @@ export function HomeView({ onOpenGame }: HomeViewProps) {
         </div>
       </section>
 
-      {/* Content Area */}
-      {activeCategory === 'community' ? (
-        <CommunityView />
-      ) : activeCategory === 'admin' && isAdmin ? (
-        <AdminDashboard />
-      ) : (
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredGames.length === 0 ? (
+      {/* Games Grid */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {filteredGames.length === 0 ? (
           <div className="col-span-full py-20 text-center">
             <div className="text-6xl mb-4">🔍</div>
             <h3 className="text-2xl font-bold text-slate-200 mb-2">لم يتم العثور على ألعاب</h3>
@@ -252,9 +234,8 @@ export function HomeView({ onOpenGame }: HomeViewProps) {
               </div>
             );
           })
-          )}
-        </section>
-      )}
+        )}
+      </section>
     </div>
   );
 }

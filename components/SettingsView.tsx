@@ -134,16 +134,27 @@ export function SettingsView() {
             🐉
           </div>
           <h4 className="text-2xl font-bold text-slate-100 mb-1">AHMAD DRAGON</h4>
-          <p className="text-slate-400 text-sm mb-6">مطور ومصمم واجهات الويب</p>
-          <a
-            href="https://t.me/ahmaddragon"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-6 py-3 bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold rounded-xl transition-all shadow-lg shadow-[#0088cc]/20 hover:scale-105"
-          >
-            <Send className="w-5 h-5" />
-            تواصل معي على تيليجرام
-          </a>
+          <p className="text-slate-400 text-sm mb-6">مطور ومصمم واجهات الويب. أضع لمساتي الإبداعية في كل كود أكتبه.</p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <a
+              href="https://t.me/ahmaddragon"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-6 py-3 bg-[#0088cc] hover:bg-[#0077b5] text-white font-bold rounded-xl transition-all shadow-lg shadow-[#0088cc]/20 hover:scale-105"
+            >
+              <Send className="w-5 h-5" />
+              تيليجرام
+            </a>
+            <a
+              href="https://ahmaddragon.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-violet-500/20 hover:scale-105"
+            >
+              <Code className="w-5 h-5" />
+              موقعي الشخصي
+            </a>
+          </div>
         </div>
       </section>
 

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useAppStore } from './Providers';
 import { games, Category } from '@/lib/games-data';
-import { Search, Trophy, Gamepad2, Star, Flame, Play, Sparkles } from 'lucide-react';
+import { Search, Trophy, Gamepad2, Star, Flame, Play, Sparkles, ExternalLink } from 'lucide-react';
 
 interface HomeViewProps {
   onOpenGame: (gameId: string) => void;
@@ -58,6 +58,15 @@ export function HomeView({ onOpenGame }: HomeViewProps) {
             <br />
             جاهز للتحدي؟
           </h1>
+          <a 
+            href="https://ahmaddragon.vercel.app/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white rounded-2xl font-bold transition-all shadow-lg hover:shadow-violet-500/20 mb-8"
+          >
+            قم بزيارة موقع المطور
+            <ExternalLink className="w-4 h-4" />
+          </a>
           <p className="text-lg text-white/80 mb-8 font-medium">
             اختر من بين مجموعة متنوعة من الألعاب الكلاسيكية والحديثة، اجمع النقاط، وافتح الإنجازات!
           </p>

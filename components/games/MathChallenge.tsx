@@ -5,6 +5,7 @@ import { useAppStore } from '../Providers';
 import { playSound } from '@/lib/audio';
 import type { Difficulty } from '../GameView';
 import confetti from 'canvas-confetti';
+import { motion, AnimatePresence } from 'motion/react';
 
 export function MathChallenge({ difficulty }: { difficulty: Difficulty }) {
   const { soundEnabled, updateGameStats } = useAppStore();
@@ -95,61 +96,103 @@ export function MathChallenge({ difficulty }: { difficulty: Difficulty }) {
   if (gameOver) {
     const percent = Math.round((correctCount / totalQuestions) * 100);
     return (
-      <div className="text-center animate-in zoom-in-95 duration-300">
-        <div className="text-6xl mb-4">{percent >= 80 ? '🧮' : '🎉'}</div>
-        <h3 className="text-3xl font-bold text-slate-100 mb-2">{percent >= 80 ? 'عبقري رياضي!' : 'جيد!'}</h3>
-        <p className="text-slate-400 mb-4">أجبت على <strong className="text-violet-400">{correctCount}</strong> من <strong className="text-violet-400">{totalQuestions}</strong> بشكل صحيح</p>
-        <p className="text-2xl text-green-400 mb-8 font-medium">النقاط: {score}</p>
-        <button
-          onClick={() => { setGameOver(false); setCorrectCount(0); setScore(0); generateProblem(); }}
-          className="px-8 py-3 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl shadow-lg shadow-violet-500/20 transition-all hover:scale-105"
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className="text-center bg-black/40 p-10 rounded-[2rem] border border-white/10 shadow-2xl shadow-black/50"
+      >
+        <motion.div 
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
+          className="text-7xl mb-6 drop-shadow-xl"
         >
-          🔄 جولة جديدة
-        </button>
-      </div>
+          {percent >= 80 ? '🧮' : '🎉'}
+        </motion.div>
+        <h3 className="text-4xl font-black text-white mb-4 drop-shadow-md">{percent >= 80 ? 'عبقري رياضي!' : 'جيد!'}</h3>
+        <p className="text-slate-400 mb-6 text-lg font-medium">أجبت على <strong className="text-violet-400 text-2xl mx-1">{correctCount}</strong> من <strong className="text-violet-400 text-2xl mx-1">{totalQuestions}</strong> بشكل صحيح</p>
+        <div className="inline-block bg-emerald-500/10 border border-emerald-500/20 px-6 py-3 rounded-2xl mb-10">
+          <p className="text-3xl text-emerald-400 font-black">النقاط: {score}</p>
+        </div>
+        <br />
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => { setGameOver(false); setCorrectCount(0); setScore(0); generateProblem(); }}
+          className="px-10 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-black text-lg rounded-2xl shadow-xl shadow-violet-500/30 flex items-center gap-3 border border-white/20 mx-auto"
+        >
+          <span className="text-2xl">🔄</span> جولة جديدة
+        </motion.button>
+      </motion.div>
     );
   }
 
   const progress = Math.round((correctCount / totalQuestions) * 100);
 
   return (
-    <div className="flex flex-col items-center w-full max-w-md animate-in fade-in duration-300">
-      <div className="w-full flex justify-between items-center mb-4 text-sm font-medium">
-        <span className="text-slate-400">{correctCount + 1}/{totalQuestions}</span>
-        <span className={`px-3 py-1 rounded-lg border ${
+    <div className="flex flex-col items-center w-full max-w-md">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full flex justify-between items-center mb-6 text-sm font-bold uppercase tracking-wider bg-black/30 p-4 rounded-2xl border border-white/5 shadow-inner"
+      >
+        <div className="flex flex-col items-center">
+          <span className="text-xs text-slate-500 mb-1">السؤال</span>
+          <span className="text-xl text-violet-400">{correctCount + 1}/{totalQuestions}</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="text-xs text-slate-500 mb-1">النقاط</span>
+          <span className="text-xl text-emerald-400">{score}</span>
+        </div>
+        <div className={`flex flex-col items-center px-4 py-2 rounded-xl border ${
           timeLeft < 4 ? 'bg-red-500/20 text-red-400 border-red-500/40 animate-pulse' : 'bg-blue-500/20 text-blue-400 border-blue-500/40'
         }`}>
-          ⏱️ {timeLeft}s
-        </span>
-      </div>
+          <span className="text-xs opacity-70 mb-1">الوقت</span>
+          <span className="text-xl">⏱️ {timeLeft}s</span>
+        </div>
+      </motion.div>
 
-      <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden mb-8">
-        <div 
-          className="h-full bg-gradient-to-r from-violet-500 to-pink-500 rounded-full transition-all duration-500"
-          style={{ width: `${progress}%` }}
+      <div className="w-full h-3 bg-black/50 rounded-full overflow-hidden mb-8 border border-white/5 p-0.5">
+        <motion.div 
+          initial={{ width: 0 }}
+          animate={{ width: `${progress}%` }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
+          className="h-full bg-gradient-to-r from-violet-600 to-fuchsia-500 rounded-full"
         />
       </div>
 
-      <div className="text-5xl sm:text-6xl font-bold text-slate-100 bg-slate-800/80 border-2 border-violet-500/30 rounded-3xl p-8 sm:p-12 mb-8 shadow-xl tracking-wider font-mono">
-        {problem.n1} {problem.op} {problem.n2}
-      </div>
+      <AnimatePresence mode="wait">
+        <motion.div 
+          key={`${problem.n1}-${problem.op}-${problem.n2}`}
+          initial={{ opacity: 0, scale: 0.8, rotateX: -90 }}
+          animate={{ opacity: 1, scale: 1, rotateX: 0 }}
+          exit={{ opacity: 0, scale: 0.8, rotateX: 90 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          className="text-6xl sm:text-7xl font-black text-white bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-white/10 rounded-[2rem] p-10 sm:p-14 mb-8 shadow-2xl shadow-black/50 tracking-widest font-mono w-full text-center relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay pointer-events-none"></div>
+          <span className="drop-shadow-lg relative z-10">{problem.n1} <span className="text-violet-400">{problem.op}</span> {problem.n2}</span>
+        </motion.div>
+      </AnimatePresence>
 
-      <input
+      <motion.input
+        whileFocus={{ scale: 1.05 }}
         type="number"
         ref={inputRef}
         placeholder="?"
         onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-        className="w-40 text-center text-4xl font-bold px-4 py-4 bg-slate-800/50 border-2 border-violet-500/50 rounded-2xl text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/30 transition-all"
+        className="w-48 text-center text-5xl font-black px-4 py-4 bg-black/40 border-2 border-white/10 rounded-2xl text-white placeholder:text-slate-600 focus:outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-500/20 transition-all shadow-inner"
       />
 
-      <button
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         onClick={() => handleSubmit()}
-        className="mt-8 px-10 py-3 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl shadow-lg shadow-violet-500/20 transition-all hover:scale-105"
+        className="mt-8 px-12 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-xl rounded-2xl shadow-xl shadow-emerald-500/30 flex items-center gap-3 border border-white/20"
       >
-        ✓ تأكيد
-      </button>
-      
-      <p className="mt-6 text-green-400 font-bold">النقاط: {score}</p>
+        <span className="text-2xl">✓</span> تأكيد
+      </motion.button>
     </div>
   );
 }

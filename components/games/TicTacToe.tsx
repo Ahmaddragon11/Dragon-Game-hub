@@ -5,6 +5,7 @@ import { useAppStore } from '../Providers';
 import { playSound } from '@/lib/audio';
 import type { Difficulty } from '../GameView';
 import confetti from 'canvas-confetti';
+import { motion, AnimatePresence } from 'motion/react';
 
 const checkWinner = (squares: (string | null)[]) => {
   const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
@@ -147,47 +148,73 @@ export function TicTacToe({ difficulty }: { difficulty: Difficulty }) {
   };
 
   return (
-    <div className="flex flex-col items-center w-full max-w-md animate-in fade-in duration-300">
-      <div className="text-center mb-6">
-        <h3 className="text-xl font-bold text-slate-100 mb-2">
+    <div className="flex flex-col items-center w-full max-w-md">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center mb-8"
+      >
+        <h3 className="text-2xl font-black text-white mb-2 drop-shadow-md">
           {winner === 'X' ? '🎉 رائع! فزتَ!' : 
            winner === 'O' ? '😔 خسرتَ! حاول مرة أخرى' : 
            winner === 'draw' ? '🤝 تعادل!' : 
            isPlayerTurn ? '🎮 دورك — أنت X' : '🤖 الذكاء الاصطناعي يفكر...'}
         </h3>
         {(difficulty === 'hard' || difficulty === 'expert') && !winner && (
-          <p className="text-amber-400 text-sm">⚠️ صعوبة عالية — الذكاء الاصطناعي لا يُهزم!</p>
+          <p className="text-amber-400 text-sm font-bold bg-amber-500/10 px-4 py-1.5 rounded-full inline-block border border-amber-500/20">⚠️ صعوبة عالية — الذكاء الاصطناعي لا يُهزم!</p>
         )}
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-3 gap-2 sm:gap-3 bg-slate-800/50 p-3 sm:p-4 rounded-2xl border border-slate-700/50 shadow-xl">
+      <div className="grid grid-cols-3 gap-3 sm:gap-4 bg-black/40 p-4 sm:p-6 rounded-[2rem] border border-white/10 shadow-2xl shadow-black/50 relative">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay rounded-[2rem] pointer-events-none"></div>
         {board.map((square, i) => {
           const isWinningSquare = winningLine.includes(i);
           return (
-            <button
+            <motion.button
+              whileHover={!square && !winner && isPlayerTurn ? { scale: 1.05 } : {}}
+              whileTap={!square && !winner && isPlayerTurn ? { scale: 0.95 } : {}}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: i * 0.05, type: "spring", stiffness: 300, damping: 20 }}
               key={i}
               onClick={() => handleSquareClick(i)}
               disabled={!!square || !!winner || !isPlayerTurn}
-              className={`w-20 h-20 sm:w-24 sm:h-24 rounded-xl text-4xl sm:text-5xl font-bold flex items-center justify-center transition-all duration-200 ${
-                square === 'X' ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg shadow-blue-500/20' :
-                square === 'O' ? 'bg-gradient-to-br from-red-500 to-red-700 text-white shadow-lg shadow-red-500/20' :
-                'bg-slate-700/50 hover:bg-slate-600 border border-slate-600/50 text-transparent'
-              } ${isWinningSquare ? 'ring-4 ring-green-500 scale-105 z-10' : ''}`}
+              className={`relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl text-5xl sm:text-6xl font-black flex items-center justify-center transition-all duration-300 overflow-hidden ${
+                square === 'X' ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-xl shadow-blue-500/30 border-b-4 border-blue-800' :
+                square === 'O' ? 'bg-gradient-to-br from-red-500 to-red-700 text-white shadow-xl shadow-red-500/30 border-b-4 border-red-800' :
+                'bg-slate-800/80 hover:bg-slate-700 border-2 border-white/5 text-transparent cursor-pointer'
+              } ${isWinningSquare ? 'ring-4 ring-emerald-400 ring-offset-4 ring-offset-slate-900 scale-110 z-10' : ''}`}
             >
-              {square}
-            </button>
+              {square && (
+                <motion.span
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  className="drop-shadow-lg"
+                >
+                  {square}
+                </motion.span>
+              )}
+            </motion.button>
           );
         })}
       </div>
 
-      {winner && (
-        <button
-          onClick={resetGame}
-          className="mt-8 px-8 py-3 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl shadow-lg shadow-violet-500/20 transition-all hover:scale-105"
-        >
-          🔄 لعبة جديدة
-        </button>
-      )}
+      <AnimatePresence>
+        {winner && (
+          <motion.button
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={resetGame}
+            className="mt-10 px-10 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-black text-lg rounded-2xl shadow-xl shadow-violet-500/30 flex items-center gap-3 border border-white/20"
+          >
+            <span className="text-2xl">🔄</span> العب مرة أخرى
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

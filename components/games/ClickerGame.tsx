@@ -5,6 +5,7 @@ import { useAppStore } from '../Providers';
 import { playSound } from '@/lib/audio';
 import type { Difficulty } from '../GameView';
 import { Zap, MousePointer2, Clock, Trophy } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface Upgrade {
   id: string;

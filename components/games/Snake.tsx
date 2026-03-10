@@ -5,6 +5,7 @@ import { useAppStore } from '../Providers';
 import { playSound } from '@/lib/audio';
 import type { Difficulty } from '../GameView';
 import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export function Snake({ difficulty }: { difficulty: Difficulty }) {
   const { soundEnabled, updateGameStats } = useAppStore();
@@ -169,51 +170,84 @@ export function Snake({ difficulty }: { difficulty: Difficulty }) {
 
   if (gameOver) {
     return (
-      <div className="text-center animate-in zoom-in-95 duration-300">
-        <div className="text-6xl mb-4">💀</div>
-        <h3 className="text-3xl font-bold text-slate-100 mb-2">انتهت اللعبة!</h3>
-        <p className="text-2xl text-green-400 mb-2 font-medium">النقاط: {score}</p>
-        <p className="text-slate-400 mb-8">الطول النهائي: {snake.length}</p>
-        <button
-          onClick={initGame}
-          className="px-8 py-3 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl shadow-lg shadow-violet-500/20 transition-all hover:scale-105"
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className="text-center bg-black/40 p-10 rounded-[2rem] border border-white/10 shadow-2xl shadow-black/50"
+      >
+        <motion.div 
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
+          className="text-7xl mb-6 drop-shadow-xl"
         >
-          🔄 العب مرة أخرى
-        </button>
-      </div>
+          💀
+        </motion.div>
+        <h3 className="text-4xl font-black text-white mb-4 drop-shadow-md">انتهت اللعبة!</h3>
+        <p className="text-slate-400 mb-6 text-lg font-medium">الطول النهائي: <strong className="text-violet-400 text-2xl mx-1">{snake.length}</strong></p>
+        <div className="inline-block bg-emerald-500/10 border border-emerald-500/20 px-6 py-3 rounded-2xl mb-10">
+          <p className="text-3xl text-emerald-400 font-black">النقاط: {score}</p>
+        </div>
+        <br />
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={initGame}
+          className="px-10 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-black text-lg rounded-2xl shadow-xl shadow-violet-500/30 flex items-center gap-3 border border-white/20 mx-auto"
+        >
+          <span className="text-2xl">🔄</span> العب مرة أخرى
+        </motion.button>
+      </motion.div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center w-full max-w-md animate-in fade-in duration-300">
-      <div className="w-full flex justify-between items-center mb-4 px-4">
+    <div className="flex flex-col items-center w-full max-w-md">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full flex justify-between items-center mb-6 px-6 bg-black/30 p-4 rounded-3xl border border-white/5 shadow-inner"
+      >
         <div className="flex flex-col items-center">
-          <span className="text-xs text-slate-500 uppercase tracking-wider mb-1">النقاط</span>
-          <span className="text-xl font-bold text-green-400">{score}</span>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">النقاط</span>
+          <span className="text-2xl font-black text-emerald-400 drop-shadow-sm">{score}</span>
         </div>
         <div className="flex flex-col items-center">
-          <span className="text-xs text-slate-500 uppercase tracking-wider mb-1">الطول</span>
-          <span className="text-xl font-bold text-slate-100">{snake.length}</span>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">الطول</span>
+          <span className="text-2xl font-black text-white drop-shadow-sm">{snake.length}</span>
         </div>
-      </div>
+      </motion.div>
 
-      <canvas 
-        ref={canvasRef} 
-        width={300} 
-        height={300} 
-        className="bg-slate-950 rounded-2xl border-2 border-violet-500/30 shadow-2xl shadow-violet-500/10"
-      />
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className="relative p-2 bg-slate-900 rounded-[2rem] border-2 border-violet-500/30 shadow-2xl shadow-violet-500/20"
+      >
+        <canvas 
+          ref={canvasRef} 
+          width={300} 
+          height={300} 
+          className="bg-[#0f172a] rounded-3xl"
+        />
+      </motion.div>
 
-      <div className="grid grid-cols-3 gap-2 mt-8">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="grid grid-cols-3 gap-3 mt-8"
+      >
         <div />
-        <button onClick={() => handleSetDir('up')} className="w-14 h-14 bg-slate-800 hover:bg-violet-600 border border-slate-700 rounded-xl flex items-center justify-center transition-all active:scale-95"><ArrowUp className="w-6 h-6" /></button>
+        <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={() => handleSetDir('up')} className="w-16 h-16 bg-slate-800/80 hover:bg-violet-600 border-2 border-white/5 rounded-2xl flex items-center justify-center transition-colors shadow-lg"><ArrowUp className="w-8 h-8 text-white" /></motion.button>
         <div />
-        <button onClick={() => handleSetDir('left')} className="w-14 h-14 bg-slate-800 hover:bg-violet-600 border border-slate-700 rounded-xl flex items-center justify-center transition-all active:scale-95"><ArrowLeft className="w-6 h-6" /></button>
-        <button onClick={() => handleSetDir('down')} className="w-14 h-14 bg-slate-800 hover:bg-violet-600 border border-slate-700 rounded-xl flex items-center justify-center transition-all active:scale-95"><ArrowDown className="w-6 h-6" /></button>
-        <button onClick={() => handleSetDir('right')} className="w-14 h-14 bg-slate-800 hover:bg-violet-600 border border-slate-700 rounded-xl flex items-center justify-center transition-all active:scale-95"><ArrowRight className="w-6 h-6" /></button>
-      </div>
+        <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={() => handleSetDir('left')} className="w-16 h-16 bg-slate-800/80 hover:bg-violet-600 border-2 border-white/5 rounded-2xl flex items-center justify-center transition-colors shadow-lg"><ArrowLeft className="w-8 h-8 text-white" /></motion.button>
+        <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={() => handleSetDir('down')} className="w-16 h-16 bg-slate-800/80 hover:bg-violet-600 border-2 border-white/5 rounded-2xl flex items-center justify-center transition-colors shadow-lg"><ArrowDown className="w-8 h-8 text-white" /></motion.button>
+        <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={() => handleSetDir('right')} className="w-16 h-16 bg-slate-800/80 hover:bg-violet-600 border-2 border-white/5 rounded-2xl flex items-center justify-center transition-colors shadow-lg"><ArrowRight className="w-8 h-8 text-white" /></motion.button>
+      </motion.div>
       
-      <p className="text-[10px] text-slate-500 mt-6 uppercase tracking-widest">⌨️ الأسهم / WASD | 📱 السحب للمس</p>
+      <p className="text-xs text-slate-500 mt-8 uppercase tracking-widest font-bold bg-black/20 px-4 py-2 rounded-full border border-white/5">⌨️ الأسهم / WASD | 📱 السحب للمس</p>
     </div>
   );
 }

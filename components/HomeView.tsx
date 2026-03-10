@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useAppStore } from './Providers';
 import { games, Category } from '@/lib/games-data';
 import { Search, Trophy, Gamepad2, Star, Flame, Play, Sparkles, ExternalLink } from 'lucide-react';
+import { motion } from 'motion/react';
 
 interface HomeViewProps {
   onOpenGame: (gameId: string) => void;
@@ -42,61 +43,101 @@ export function HomeView({ onOpenGame }: HomeViewProps) {
   const bestGame = bestGameEntry ? games.find(g => g.id === bestGameEntry[0]) : null;
   const featuredGame = games.find(g => g.id === 'snake');
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  };
+
   return (
-    <div className="space-y-12 animate-in fade-in duration-500">
+    <div className="space-y-12 pb-20">
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden rounded-[3rem] bg-gradient-to-br from-violet-600 via-fuchsia-600 to-orange-500 p-8 sm:p-12 text-center shadow-2xl shadow-violet-500/20">
+      <section className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-violet-600 via-indigo-700 to-purple-900 p-8 sm:p-12 lg:p-16 text-center shadow-2xl shadow-violet-900/40 border border-white/10">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
-        <div className="relative z-10 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium mb-6">
-            <Sparkles className="w-4 h-4 text-amber-300" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+        
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="relative z-10 max-w-3xl mx-auto"
+        >
+          <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-bold mb-8 shadow-lg shadow-black/10">
+            <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
             مرحباً بك في عالم الألعاب
-          </div>
-          <h1 className="text-4xl sm:text-6xl font-black text-white mb-6 leading-tight">
-            مرحباً <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-yellow-400">{playerName}</span>!
+          </motion.div>
+          
+          <motion.h1 variants={itemVariants} className="text-5xl sm:text-7xl font-black text-white mb-6 leading-tight tracking-tight">
+            مرحباً <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-orange-400 drop-shadow-sm">{playerName}</span>!
             <br />
             جاهز للتحدي؟
-          </h1>
-          <a 
-            href="https://ahmaddragon.vercel.app/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white rounded-2xl font-bold transition-all shadow-lg hover:shadow-violet-500/20 mb-8"
-          >
-            قم بزيارة موقع المطور
-            <ExternalLink className="w-4 h-4" />
-          </a>
-          <p className="text-lg text-white/80 mb-8 font-medium">
+          </motion.h1>
+
+          <motion.p variants={itemVariants} className="text-lg sm:text-xl text-violet-100 mb-10 font-medium max-w-2xl mx-auto leading-relaxed">
             اختر من بين مجموعة متنوعة من الألعاب الكلاسيكية والحديثة، اجمع النقاط، وافتح الإنجازات!
-          </p>
+          </motion.p>
+          
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+            <a 
+              href="https://ahmaddragon.vercel.app/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white text-violet-900 rounded-2xl font-black text-lg transition-all hover:scale-105 shadow-xl shadow-white/10 overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-white via-violet-100 to-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <span className="relative z-10">قم بزيارة موقع المطور</span>
+              <ExternalLink className="w-5 h-5 relative z-10 group-hover:rotate-12 transition-transform" />
+            </a>
+          </motion.div>
 
-          <div className="flex flex-wrap justify-center gap-4 mb-8">
-            <div className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-md">
-              <Trophy className="w-5 h-5 text-amber-300" />
-              <span className="text-white font-bold">{stats.points} نقطة</span>
-            </div>
-            <div className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-md">
-              <Star className="w-5 h-5 text-amber-300" />
-              <span className="text-white font-bold">المستوى {stats.level}</span>
-            </div>
-          </div>
-
-          <div className="max-w-md mx-auto bg-black/20 p-4 rounded-2xl backdrop-blur-sm border border-white/10">
-            <div className="flex justify-between text-sm text-white/90 mb-2 font-medium">
-              <span>تقدم المستوى</span>
-              <span>{xpInLevel}/{xpNeeded} XP</span>
-            </div>
-            <div className="h-3 bg-black/40 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-amber-400 to-orange-400 rounded-full transition-all duration-1000 ease-out relative"
-                style={{ width: `${progressPercent}%` }}
-              >
-                <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+          <motion.div variants={itemVariants} className="grid grid-cols-2 sm:flex sm:flex-wrap justify-center gap-4 mb-10">
+            <div className="flex flex-col sm:flex-row items-center gap-3 px-6 py-4 rounded-2xl bg-black/20 border border-white/10 backdrop-blur-md shadow-inner">
+              <div className="p-2 bg-amber-500/20 rounded-xl">
+                <Trophy className="w-6 h-6 text-amber-400" />
+              </div>
+              <div className="text-center sm:text-right">
+                <div className="text-2xl font-black text-white">{stats.points}</div>
+                <div className="text-xs text-amber-200/80 font-bold uppercase tracking-wider">نقطة</div>
               </div>
             </div>
-          </div>
-        </div>
+            <div className="flex flex-col sm:flex-row items-center gap-3 px-6 py-4 rounded-2xl bg-black/20 border border-white/10 backdrop-blur-md shadow-inner">
+              <div className="p-2 bg-violet-500/20 rounded-xl">
+                <Star className="w-6 h-6 text-violet-400" />
+              </div>
+              <div className="text-center sm:text-right">
+                <div className="text-2xl font-black text-white">{stats.level}</div>
+                <div className="text-xs text-violet-200/80 font-bold uppercase tracking-wider">المستوى</div>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="max-w-md mx-auto bg-black/30 p-5 rounded-3xl backdrop-blur-md border border-white/10 shadow-2xl">
+            <div className="flex justify-between text-sm text-white mb-3 font-bold">
+              <span className="flex items-center gap-2"><Flame className="w-4 h-4 text-orange-400" /> تقدم المستوى</span>
+              <span className="text-orange-300">{xpInLevel} / {xpNeeded} XP</span>
+            </div>
+            <div className="h-4 bg-black/50 rounded-full overflow-hidden border border-white/5 p-0.5">
+              <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: `${progressPercent}%` }}
+                transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
+                className="h-full bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 rounded-full relative"
+              >
+                <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+              </motion.div>
+            </div>
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* Featured Game */}
@@ -160,13 +201,18 @@ export function HomeView({ onOpenGame }: HomeViewProps) {
       </section>
 
       {/* Games Grid */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <motion.section 
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+      >
         {filteredGames.length === 0 ? (
-          <div className="col-span-full py-20 text-center">
+          <motion.div variants={itemVariants} className="col-span-full py-20 text-center">
             <div className="text-6xl mb-4">🔍</div>
             <h3 className="text-2xl font-bold text-slate-200 mb-2">لم يتم العثور على ألعاب</h3>
             <p className="text-slate-400">جرب كلمة أخرى أو فلتر مختلف</p>
-          </div>
+          </motion.div>
         ) : (
           filteredGames.map((game) => {
             const gs = gameStats[game.id];
@@ -174,7 +220,8 @@ export function HomeView({ onOpenGame }: HomeViewProps) {
             const playCount = gs ? `${gs.plays} مرة` : 'جديد';
 
               return (
-              <div 
+              <motion.div 
+                variants={itemVariants}
                 key={game.id}
                 onClick={() => onOpenGame(game.id)}
                 className="group relative bg-slate-800/40 backdrop-blur-sm rounded-[2rem] overflow-hidden border border-white/5 hover:border-violet-500/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-violet-500/20 cursor-pointer flex flex-col h-full"
@@ -240,11 +287,11 @@ export function HomeView({ onOpenGame }: HomeViewProps) {
                     العب الآن
                   </button>
                 </div>
-              </div>
+              </motion.div>
             );
           })
         )}
-      </section>
+      </motion.section>
     </div>
   );
 }

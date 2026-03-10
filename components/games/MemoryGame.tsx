@@ -6,6 +6,7 @@ import { playSound } from '@/lib/audio';
 import type { Difficulty } from '../GameView';
 import confetti from 'canvas-confetti';
 import { memoryEmojis } from '@/lib/game-content';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface Card {
   id: number;
@@ -95,64 +96,113 @@ export function MemoryGame({ difficulty }: { difficulty: Difficulty }) {
   if (gameOver) {
     const pts = Math.max(10, 80 + (pairsCount * 2 - moves) * 5);
     return (
-      <div className="text-center animate-in zoom-in-95 duration-300">
-        <div className="text-6xl mb-4">🧠</div>
-        <h3 className="text-3xl font-bold text-slate-100 mb-2">أحسنت!</h3>
-        <p className="text-slate-400 mb-4">وجدت كل الأزواج في <strong className="text-violet-400">{moves}</strong> حركة</p>
-        <p className="text-2xl text-green-400 mb-8 font-medium">النقاط: {pts}</p>
-        <button
-          onClick={initGame}
-          className="px-8 py-3 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl shadow-lg shadow-violet-500/20 transition-all hover:scale-105"
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className="text-center bg-black/40 p-10 rounded-[2rem] border border-white/10 shadow-2xl shadow-black/50"
+      >
+        <motion.div 
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
+          className="text-7xl mb-6 drop-shadow-xl"
         >
-          🔄 العب مرة أخرى
-        </button>
-      </div>
+          🧠
+        </motion.div>
+        <h3 className="text-4xl font-black text-white mb-4 drop-shadow-md">أحسنت!</h3>
+        <p className="text-slate-400 mb-6 text-lg font-medium">وجدت كل الأزواج في <strong className="text-violet-400 text-2xl mx-1">{moves}</strong> حركة</p>
+        <div className="inline-block bg-emerald-500/10 border border-emerald-500/20 px-6 py-3 rounded-2xl mb-10">
+          <p className="text-3xl text-emerald-400 font-black">النقاط: {pts}</p>
+        </div>
+        <br />
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={initGame}
+          className="px-10 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-black text-lg rounded-2xl shadow-xl shadow-violet-500/30 flex items-center gap-3 border border-white/20 mx-auto"
+        >
+          <span className="text-2xl">🔄</span> العب مرة أخرى
+        </motion.button>
+      </motion.div>
     );
   }
 
   const progressPercent = (matchedCount / pairsCount) * 100;
 
   return (
-    <div className="flex flex-col items-center w-full max-w-2xl animate-in fade-in duration-300">
-      <div className="w-full flex justify-between items-center mb-6 px-4">
+    <div className="flex flex-col items-center w-full max-w-2xl">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full flex justify-between items-center mb-8 px-6 bg-black/30 p-4 rounded-3xl border border-white/5 shadow-inner"
+      >
         <div className="flex flex-col items-center">
-          <span className="text-xs text-slate-500 uppercase tracking-wider mb-1">حركات</span>
-          <span className="text-xl font-bold text-slate-100">{moves}</span>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">حركات</span>
+          <span className="text-2xl font-black text-white drop-shadow-sm">{moves}</span>
         </div>
         <div className="flex-1 mx-8">
-          <div className="flex justify-between text-xs text-slate-400 mb-2 font-medium">
+          <div className="flex justify-between text-xs text-slate-400 mb-3 font-bold uppercase tracking-wider">
             <span>الأزواج المتطابقة</span>
-            <span>{matchedCount}/{pairsCount}</span>
+            <span className="text-violet-400">{matchedCount}/{pairsCount}</span>
           </div>
-          <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-violet-500 to-pink-500 rounded-full transition-all duration-500"
-              style={{ width: `${progressPercent}%` }}
+          <div className="h-3 bg-black/50 rounded-full overflow-hidden border border-white/5 p-0.5">
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: `${progressPercent}%` }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="h-full bg-gradient-to-r from-violet-600 to-fuchsia-500 rounded-full"
             />
           </div>
         </div>
         <div className="flex flex-col items-center">
-          <span className="text-xs text-slate-500 uppercase tracking-wider mb-1">أزواج</span>
-          <span className="text-xl font-bold text-green-400">{matchedCount}</span>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">أزواج</span>
+          <span className="text-2xl font-black text-emerald-400 drop-shadow-sm">{matchedCount}</span>
         </div>
-      </div>
+      </motion.div>
 
-      <div className={`grid gap-3 sm:gap-4 p-4 bg-slate-800/30 rounded-3xl border border-slate-700/50 ${
+      <div className={`grid gap-3 sm:gap-4 p-4 sm:p-6 bg-black/40 rounded-[2rem] border border-white/10 shadow-2xl shadow-black/50 relative ${
         pairsCount <= 4 ? 'grid-cols-4' : pairsCount <= 6 ? 'grid-cols-4' : 'grid-cols-4 sm:grid-cols-5'
       }`}>
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay rounded-[2rem] pointer-events-none"></div>
         {cards.map((card, i) => (
-          <button
+          <motion.button
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: i * 0.05, type: "spring", stiffness: 300, damping: 20 }}
+            whileHover={!card.flipped && !card.matched && !isLocked ? { scale: 1.05, y: -2 } : {}}
+            whileTap={!card.flipped && !card.matched && !isLocked ? { scale: 0.95 } : {}}
             key={card.id}
             onClick={() => handleFlip(i)}
             disabled={card.flipped || card.matched || isLocked}
-            className={`w-16 h-16 sm:w-20 sm:h-20 rounded-xl text-2xl sm:text-3xl flex items-center justify-center transition-all duration-300 transform ${
+            className={`relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-2xl text-3xl sm:text-4xl md:text-5xl flex items-center justify-center transition-all duration-500 overflow-hidden ${
               card.flipped || card.matched
-                ? 'bg-white text-slate-900 rotate-0'
-                : 'bg-gradient-to-br from-violet-500 to-pink-500 text-transparent -rotate-180'
-            } ${card.matched ? 'opacity-40 scale-90 grayscale-[0.5]' : 'shadow-lg shadow-violet-500/20 hover:scale-105'}`}
+                ? 'bg-gradient-to-br from-white to-slate-200 text-slate-900 shadow-inner border-2 border-white/50'
+                : 'bg-gradient-to-br from-violet-600 to-fuchsia-600 text-transparent shadow-lg shadow-violet-500/30 border-b-4 border-violet-800 cursor-pointer'
+            } ${card.matched ? 'opacity-50 scale-95 grayscale-[0.3] border-emerald-400/50' : ''}`}
+            style={{
+              transformStyle: 'preserve-3d',
+              transform: card.flipped || card.matched ? 'rotateY(180deg)' : 'rotateY(0deg)'
+            }}
           >
-            {(card.flipped || card.matched) ? card.emoji : '?'}
-          </button>
+            <div 
+              className="absolute inset-0 flex items-center justify-center backface-hidden"
+              style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }}
+            >
+              {(card.flipped || card.matched) && (
+                <span className="drop-shadow-md">{card.emoji}</span>
+              )}
+            </div>
+            
+            <div 
+              className="absolute inset-0 flex items-center justify-center backface-hidden"
+              style={{ backfaceVisibility: 'hidden' }}
+            >
+              {!(card.flipped || card.matched) && (
+                <span className="text-white/50 font-black text-2xl sm:text-3xl">?</span>
+              )}
+            </div>
+          </motion.button>
         ))}
       </div>
     </div>
